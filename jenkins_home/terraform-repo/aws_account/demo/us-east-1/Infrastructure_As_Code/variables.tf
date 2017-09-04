@@ -36,3 +36,4 @@ variable "lamp_lc" {
 }
 
 output "lamp_dns_name" { value = "${ module.lamp.elb_dns_name }" }
+output "image_id" { value = "${ var.lamp_lc["image_id"] }" }

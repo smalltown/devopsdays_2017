@@ -41,6 +41,10 @@ init: create-keypair terraform.tfvars
 	@./operations/scripts/common/init-backend
 	@echo "${GREEN}✓ initialize terraform backend - success${NC}"
 
+## terraform output
+output:
+	@terraform output -json
+
 ## terraform plan
 plan: init
 	terraform validate
@@ -49,6 +53,12 @@ plan: init
 
 ## terraform show
 show: ; terraform show
+
+## test
+test:
+	@terraform output -json > spec/terraform.output.json
+	@bundle
+	@bundle exec rake spec
 
 terraform.tfvars: ; @operations/scripts/lamp/init-variables
 

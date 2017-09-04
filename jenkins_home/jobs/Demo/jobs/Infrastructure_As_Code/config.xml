@@ -1,12 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <flow-definition plugin="workflow-job@2.12.2">
-  <actions>
-    <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction plugin="pipeline-model-definition@1.1.9">
-      <jobProperties/>
-      <triggers/>
-      <parameters/>
-    </org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction>
-  </actions>
+  <actions/>
   <description></description>
   <keepDependencies>false</keepDependencies>
   <properties>
@@ -71,6 +65,16 @@ pipeline {
       steps {
         dir(&quot;${env.JENKINS_HOME}/terraform-repo/aws_account/${phase}/${env.AWS_DEFAULT_REGION}/${job_info[&apos;name&apos;]}&quot;){
           sh &quot;make deploy image_id=${version}&quot;
+        }
+      }
+    }
+
+    stage(&apos;Testing&apos;) {
+      when { expression { version != &apos;none&apos; } }
+
+      steps {
+        dir(&quot;${env.JENKINS_HOME}/terraform-repo/aws_account/${phase}/${env.AWS_DEFAULT_REGION}/${job_info[&apos;name&apos;]}&quot;){
+          sh &quot;make test&quot;
         }
       }
     }

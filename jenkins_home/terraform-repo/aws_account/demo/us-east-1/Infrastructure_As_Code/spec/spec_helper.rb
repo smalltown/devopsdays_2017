@@ -1,0 +1,2 @@
+require 'awspec'
+Awsecrets.load
