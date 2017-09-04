@@ -44,6 +44,7 @@ docker run --detach \
            --env "AWS_ACCESS_KEY_ID=$aws_access_key_id" \
            --env "AWS_SECRET_ACCESS_KEY=$aws_secret_access_key" \
            --env "AWS_DEFAULT_REGION=$aws_default_region" \
+           --env "AWS_REGION=$aws_default_region" \
            --env "TERRAFORM_BACKEND_S3_BUCKET=$terraform_backend_s3_bucket" \
            --env "HOST_UID=$host_uid" \
             $opts $image
