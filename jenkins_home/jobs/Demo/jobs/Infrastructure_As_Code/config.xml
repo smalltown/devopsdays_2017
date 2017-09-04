@@ -1,0 +1,84 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<flow-definition plugin="workflow-job@2.12.2">
+  <actions>
+    <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction plugin="pipeline-model-definition@1.1.9">
+      <jobProperties/>
+      <triggers/>
+      <parameters/>
+    </org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction>
+  </actions>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.ChoiceParameterDefinition>
+          <name>phase</name>
+          <description>choose which phase you want to deploy
+ doesn&apos;t matter when release build</description>
+          <choices class="java.util.Arrays$ArrayList">
+            <a class="string-array">
+              <string>demo</string>
+            </a>
+          </choices>
+        </hudson.model.ChoiceParameterDefinition>
+        <hudson.model.ChoiceParameterDefinition>
+          <name>version</name>
+          <description>choose which version you want to deploy
+ keep none when release build</description>
+          <choices class="java.util.Arrays$ArrayList">
+            <a class="string-array">
+              <string>ami-ffd2d1e9</string>
+              <string>ami-6d656316</string>
+            </a>
+          </choices>
+        </hudson.model.ChoiceParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+    <jenkins.model.BuildDiscarderProperty>
+      <strategy class="hudson.tasks.LogRotator">
+        <daysToKeep>-1</daysToKeep>
+        <numToKeep>10</numToKeep>
+        <artifactDaysToKeep>-1</artifactDaysToKeep>
+        <artifactNumToKeep>-1</artifactNumToKeep>
+      </strategy>
+    </jenkins.model.BuildDiscarderProperty>
+  </properties>
+  <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@2.39">
+    <script>// define pipeline global variable
+def job_info = [:]
+
+job_info[&apos;folder&apos;] = &apos;Demo&apos;
+job_info[&apos;name&apos;] = env.JOB_BASE_NAME
+
+pipeline {
+
+  agent any
+
+  stages {
+    stage(&apos;Build&apos;) {
+      when { expression { version == &apos;none&apos; } }
+
+      steps {
+        echo &apos;Building AMI...&apos;
+        deleteDir()
+      }
+    }
+
+    stage(&apos;Deploy&apos;) {
+      when { expression { version != &apos;none&apos; } }
+
+      steps {
+        dir(&quot;${env.JENKINS_HOME}/terraform-repo/aws_account/${phase}/${env.AWS_DEFAULT_REGION}/${job_info[&apos;name&apos;]}&quot;){
+          sh &quot;make deploy image_id=${version}&quot;
+        }
+      }
+    }
+  }
+}
+</script>
+    <sandbox>false</sandbox>
+  </definition>
+  <triggers/>
+  <disabled>false</disabled>
+</flow-definition>

@@ -1,0 +1,51 @@
+#!/bin/bash
+
+# Exit on any individual command failure.
+set -e
+
+# Pretty colors.
+red='\033[0;31m'
+green='\033[0;32m'
+neutral='\033[0m'
+
+timestamp=$(date +%s)
+
+image=${IMAGE:-"smalltown/devopsdays_2017:jenkins"}
+project=${PROJECT:-"jenkins"}
+jenkins_home=${JENKINS_HOME:-"/var/jenkins_home"}
+container_id=${CONTAINER_ID:-$project-$timestamp}
+aws_access_key_id=${AWS_ACCESS_KEY_ID:-""}
+aws_secret_access_key=${AWS_SECRET_ACCESS_KEY:-""}
+aws_default_region=${AWS_DEFAULT_REGION:-""}
+terraform_backend_s3_bucket=${TERRAFORM_BACKEND_S3_BUCKET:-""}
+host_uid=`id -u`
+opts="--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
+
+# pull the latest docker image
+printf ${green}"Pull the image: "$image${neutral}"\n"
+docker pull $image
+printf "\n"
+
+# run the docker container
+printf ${green}"Starting Docker Container: "$image${neutral}:"\n"
+printf ${green}"Container ID: "$container_id${neutral}"\n"
+printf ${green}"AWS Default Region: "$AWS_DEFAULT_REGION${neutral}"\n"
+printf ${green}"AWS Access Key ID: "********${neutral}"\n"
+printf ${green}"AWS Secret Access Key: "********${neutral}"\n"
+printf ${green}"Terraform Backend S3 Bucket: "$TERRAFORM_BACKEND_S3_BUCKET${neutral}"\n"
+
+docker run --detach \
+           --volume="$PWD/jenkins_home":"$jenkins_home":rw \
+           --volume="/var/run/docker.sock:/var/run/docker.sock":ro \
+           --volume="/tmp:/tmp":rw \
+           --publish 80:8080 \
+           --publish 50000:50000 \
+           --name $container_id \
+           --env "AWS_ACCESS_KEY_ID=$aws_access_key_id" \
+           --env "AWS_SECRET_ACCESS_KEY=$aws_secret_access_key" \
+           --env "AWS_DEFAULT_REGION=$aws_default_region" \
+           --env "TERRAFORM_BACKEND_S3_BUCKET=$terraform_backend_s3_bucket" \
+           --env "HOST_UID=$host_uid" \
+            $opts $image
+
+printf "\n"

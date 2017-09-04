@@ -1,0 +1,56 @@
+SHELL += -eu
+
+BLUE := \033[0;34m
+GREEN := \033[0;32m
+RED := \033[0;31m
+NC := \033[0m
+
+export DIR_KEY_PAIR			:= .ssh
+export AWS_EC2_KEY_NAME	:= lamp
+
+include ./operations/makefiles/common/*.mk
+
+## terraform apply
+apply: plan
+	@echo "${BLUE}❤ terraform apply - commencing${NC}"
+	terraform apply -target=module.vpc
+	terraform apply -target=module.lamp
+	@echo "${GREEN}✓ make $@ - success${NC}"
+
+## deploy new ami
+deploy:
+	@echo "${BLUE}❤ terraform apply - commencing${NC}"
+	terraform apply -target=module.lamp -var 'lamp_lc={image_id="${image_id}"}'
+	@echo "${GREEN}✓ make $@ - success${NC}"
+
+## terraform destroy
+destroy:
+	terraform destroy
+	@$(MAKE) delete-keypair
+	@rm -f terraform.tfvars
+
+## terraform get
+get: ; terraform get
+
+## terraform initialization
+init: create-keypair terraform.tfvars
+	@echo "${BLUE}❤ sync module - processing${NC}"
+	terraform get
+	@echo "${GREEN}✓ sync module - success${NC}"
+	@echo "${BLUE}❤ initialize terraform backend - processing${NC}"
+	@./operations/scripts/common/init-backend
+	@echo "${GREEN}✓ initialize terraform backend - success${NC}"
+
+## terraform plan
+plan: init
+	terraform validate
+	@echo "${GREEN}✓ terraform validate - success${NC}"
+	terraform plan
+
+## terraform show
+show: ; terraform show
+
+terraform.tfvars: ; @operations/scripts/lamp/init-variables
+
+.PHONY: apply destroy get init plan show
+.DEFAULT_GOAL := help

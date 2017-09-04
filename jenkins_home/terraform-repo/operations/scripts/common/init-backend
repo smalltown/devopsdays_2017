@@ -1,0 +1,14 @@
+#!/bin/bash -e
+
+REPO_NAME='terraform-repo'
+KEY=`pwd`
+KEY=`echo ${KEY##*$REPO_NAME/}`/terraform.tfstate
+
+if [ -f ".terraform/terraform.tfstate" ]; then
+  :
+else
+  terraform init \
+    -backend-config "bucket=$TERRAFORM_BACKEND_S3_BUCKET" \
+    -backend-config "key=$KEY" \
+    -backend-config "region=$AWS_DEFAULT_REGION"
+fi

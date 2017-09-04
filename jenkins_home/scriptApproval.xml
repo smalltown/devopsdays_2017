@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<scriptApproval plugin="script-security@1.33">
+  <approvedScriptHashes>
+    <string>4123293e609a6b2ffcf43da0556565a7ae10c103</string>
+    <string>6b7a84583a36e242ff9729fabec0e81f19cb199b</string>
+    <string>8b886849d001f79bc9772d78f51f33d280664676</string>
+    <string>9a5d10f70d717a4de4254b9355d62fd65f549d5b</string>
+    <string>efb330409090f2ec91293b156b49b9ec20351754</string>
+  </approvedScriptHashes>
+  <approvedSignatures>
+    <string>method java.io.File exists</string>
+    <string>method java.io.File isDirectory</string>
+    <string>new java.io.File java.lang.String</string>
+  </approvedSignatures>
+  <aclApprovedSignatures/>
+  <approvedClasspathEntries/>
+  <pendingScripts>
+    <pendingScript>
+      <context>
+        <item>Seed</item>
+      </context>
+      <script>import jenkins.model.Jenkins
+
+folder(&apos;Demo&apos;)
+
+// approve the pipeline groovy automaitcally
+def scriptApproval = Jenkins.instance.getExtensionList(&apos;org.jenkinsci.plugins.scriptsecurity.scripts.ScriptApproval&apos;)[0]
+
+scriptApproval.approveSignature(&quot;new java.io.File java.lang.String&quot;)
+scriptApproval.approveSignature(&quot;method java.io.File exists&quot;)
+scriptApproval.approveSignature(&quot;method java.io.File isDirectory&quot;)
+</script>
+      <language>groovy</language>
+    </pendingScript>
+    <pendingScript>
+      <context/>
+      <script></script>
+      <language>groovy</language>
+    </pendingScript>
+  </pendingScripts>
+  <pendingSignatures/>
+  <pendingClasspathEntries/>
+</scriptApproval>
