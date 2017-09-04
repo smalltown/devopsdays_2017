@@ -24,7 +24,7 @@ deploy:
 	@echo "${GREEN}✓ make $@ - success${NC}"
 
 ## terraform destroy
-destroy:
+destroy: init
 	terraform destroy
 	@$(MAKE) delete-keypair
 	@rm -f terraform.tfvars
