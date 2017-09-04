@@ -1,6 +1,12 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <flow-definition plugin="workflow-job@2.12.2">
-  <actions/>
+  <actions>
+    <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction plugin="pipeline-model-definition@1.1.9">
+      <jobProperties/>
+      <triggers/>
+      <parameters/>
+    </org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction>
+  </actions>
   <description></description>
   <keepDependencies>false</keepDependencies>
   <properties>
