@@ -4,6 +4,8 @@ terraform.tfstate.backup
 .terraform.d
 .ssh
 .gem
+.bundle
+.viminfo
 
 # xml config
 #jenkins_home/config.xml
